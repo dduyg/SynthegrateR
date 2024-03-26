@@ -1,3 +1,5 @@
+# SynthegrateR: A data integration tool written in R
+
 # Load required libraries
 library(readr)    # For reading CSV files
 library(readxl)   # For reading Excel files
@@ -16,7 +18,7 @@ read_json_data <- function(file_path) {
   tryCatch({
     jsonlite::fromJSON(file_path)
   }, error = function(e) {
-    stop(paste("Error reading JSON file:", file_path, "\n", conditionMessage(e), "\n"))
+    stop(paste("SynthegrateR Error: Error reading JSON file:", file_path, "\n", conditionMessage(e), "\n"))
   })
 }
 
@@ -25,7 +27,7 @@ read_xml_data <- function(file_path) {
   tryCatch({
     XML::xmlToDataFrame(file_path)
   }, error = function(e) {
-    stop(paste("Error reading XML file:", file_path, "\n", conditionMessage(e), "\n"))
+    stop(paste("SynthegrateR Error: Error reading XML file:", file_path, "\n", conditionMessage(e), "\n"))
   })
 }
 
@@ -34,7 +36,7 @@ retrieve_api_data <- function(api_urls) {
   api_data <- lapply(api_urls, function(url) {
     response <- GET(url)
     if (http_error(response)) {
-      stop(paste("Error retrieving data from API URL:", url, "\n", content(response, "text"), "\n"))
+      stop(paste("SynthegrateR Error: Error retrieving data from API URL:", url, "\n", content(response, "text"), "\n"))
     } else {
       content(response, "parsed")
     }
@@ -43,7 +45,7 @@ retrieve_api_data <- function(api_urls) {
 }
 
 # Main function to integrate data from multiple sources
-integrate_data <- function(csv_files, excel_files, db_path, sql_query, api_urls, merge_strategy = "inner", key_columns = NULL) {
+synthegrate_data <- function(csv_files, excel_files, db_path, sql_query, api_urls, merge_strategy = "inner", key_columns = NULL) {
   # Read data from CSV files
   csv_data <- csv_files %>% 
     map(read_csv) 
@@ -76,16 +78,16 @@ integrate_data <- function(csv_files, excel_files, db_path, sql_query, api_urls,
 # Function to log errors to a file
 log_error <- function(message) {
   timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
-  log_message <- paste(timestamp, "ERROR:", message, "\n")
+  log_message <- paste(timestamp, "SynthegrateR Error:", message, "\n")
   cat(log_message)
   # Append the error message to a log file
-  write(log_message, file = "error_log.txt", append = TRUE)
+  write(log_message, file = "synthegrateR_error_log.txt", append = TRUE)
 }
 
 # Function to generate documentation for the script
 generate_documentation <- function() {
-  cat("Script Documentation:\n")
-  cat("Usage: integrate_data(csv_files, excel_files, db_path, sql_query, api_urls, merge_strategy = 'inner', key_columns = NULL)\n")
+  cat("SynthegrateR Documentation:\n")
+  cat("Usage: synthegrate_data(csv_files, excel_files, db_path, sql_query, api_urls, merge_strategy = 'inner', key_columns = NULL)\n")
   cat("\n")
   cat("Parameters:\n")
   cat("- csv_files: A list of file paths to CSV files.\n")
@@ -97,7 +99,7 @@ generate_documentation <- function() {
   cat("- key_columns: Optional. A vector of column names to use as keys for merging data.\n")
   cat("\n")
   cat("Examples:\n")
-  cat("integrated_data <- integrate_data(csv_files, excel_files, db_path, sql_query, api_urls)\n")
+  cat("integrated_data <- synthegrate_data(csv_files, excel_files, db_path, sql_query, api_urls)\n")
 }
 
 # Example usage:
@@ -122,10 +124,10 @@ xml_files <- list("xml1" = "path/to/data1.xml", "xml2" = "path/to/data2.xml")
 api_urls <- c("https://api.example.com/data1", "https://api.example.com/data2")
 
 # Integrate data
-integrated_data <- integrate_data(csv_files, excel_files, db_path, sql_query, api_urls)
+integrated_data <- synthegrate_data(csv_files, excel_files, db_path, sql_query, api_urls)
 
 # Unit tests
-test_that("integration_data returns a data frame", {
+test_that("synthegrate_data returns a data frame", {
   expect_is(integrated_data, "data.frame")
 })
 
